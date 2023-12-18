@@ -19,6 +19,8 @@ namespace MaskedEnemyRework.Patches
         [HarmonyPrefix]
         static void UpdateSpawnRates(ref SelectableLevel ___currentLevel)
         {
+            if (Plugin.UseVanillaSpawns)
+                return;
 
             ManualLogSource logger = BepInEx.Logging.Logger.CreateLogSource(PluginInfo.PLUGIN_GUID);
             logger.LogInfo("Starting Round Manager");
@@ -38,6 +40,8 @@ namespace MaskedEnemyRework.Patches
                 var enemy = ___currentLevel.Enemies[i];
                 if (enemy.enemyType.enemyName == "Masked")
                     currentLevelEnemiesCopy.Remove(enemy);
+                if (enemy.enemyType.enemyName == "Flowerman")
+                    flowerman = enemy;
             }
             ___currentLevel.Enemies = currentLevelEnemiesCopy;
             
@@ -85,15 +89,19 @@ namespace MaskedEnemyRework.Patches
                     new Keyframe(20f,Plugin.MidOutsideEnemySpawnCurve),
                     new Keyframe(21f, Plugin.EndOutsideEnemySpawnCurve)
                 });
-                maskedEnemy.enemyType.isOutsideEnemy = true;
-                maskedEnemy.rarity = 1000000000;
-                ___currentLevel.OutsideEnemies.Clear();
                 ___currentLevel.DaytimeEnemies.Clear();
-                ___currentLevel.DaytimeEnemies.Add(maskedEnemy);
-                ___currentLevel.OutsideEnemies.Add(maskedEnemy);
+                ___currentLevel.OutsideEnemies.Clear();
+
+                maskedEnemy.rarity = 1000000000;
                 foreach (var enemy in ___currentLevel.Enemies)
                 {
                     enemy.rarity = 0;
+                }
+                if (Plugin.CanSpawnOutside)
+                {
+                    maskedEnemy.enemyType.isOutsideEnemy = true;
+                    ___currentLevel.OutsideEnemies.Add(maskedEnemy);
+                    ___currentLevel.DaytimeEnemies.Add(maskedEnemy);
                 }
             } else
             {

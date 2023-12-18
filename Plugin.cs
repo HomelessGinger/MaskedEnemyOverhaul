@@ -26,6 +26,7 @@ namespace MaskedEnemyRework
 
 
         private ConfigEntry<bool> ZombieApocalypeModeConfig;
+        private ConfigEntry<bool> UseVanillaSpawnsConfig;
         private ConfigEntry<int> ZombieApocalypeRandomChanceConfig;
         private ConfigEntry<float> InsideEnemySpawnCurveConfig;
         private ConfigEntry<float> MiddayInsideEnemySpawnCurveConfig;
@@ -42,6 +43,7 @@ namespace MaskedEnemyRework
 
 
         public static bool ZombieApocalypseMode;
+        public static bool UseVanillaSpawns;
         public static int RandomChanceZombieApocalypse;
         public static float InsideEnemySpawnCurve;
         public static float MiddayInsideEnemySpawnCurve;
@@ -62,13 +64,19 @@ namespace MaskedEnemyRework
 
             RemoveMasksConfig = Config.Bind<bool>("General", "Remove Mask From Masked Enemy", true, "Whether or not the Masked Enemy has a mask on.");
             RemoveZombieArmsConfig = Config.Bind<bool>("General", "Remove Zombie Arms", true, "Remove the animation where the Masked raise arms like a zombie.");
-            UseSpawnRarityConfig = Config.Bind<bool>("General", "Use Spawn Rarity", false, "Use custom spawn rate from config. I would recommend leaving this false, as the mod already bumps up the spawn chances significantly. (To the same as bracken)");
-            SpawnRarityConfig = Config.Bind<int>("General", "Spawn Rarity", 15, "The rarity for the Masked Enemy to spawn. The higher the number, the more likely to spawn. Can go to 1000000000, any higher will break. Use Spawn Rarity must be set to True");
-            CanSpawnOutsideConfig = Config.Bind<bool>("General", "Allow Masked To Spawn Outside", false, "Whether the Masked Enemy can spawn outside the building");
-            MaxSpawnCountConfig = Config.Bind<int>("General", "Max Number of Masked", 2, "Max Number of possible mimics to spawn in one level");
+            UseVanillaSpawnsConfig = Config.Bind<bool>("General", "Use Vanilla Spawns", false, "Ignores anything else in this mod. Only uses the above settings from this config. Will not spawn on all moons. will ignore EVERYTHING in the config below this point.");
+
+
+
+            UseSpawnRarityConfig = Config.Bind<bool>("Spawns", "Use Spawn Rarity", false, "Use custom spawn rate from config. If this is false, the masked spawns at the same rate as the Bracken. If true, will spawn at whatever rarity is given in Spawn Rarity config option");
+            SpawnRarityConfig = Config.Bind<int>("Spawns", "Spawn Rarity", 15, "The rarity for the Masked Enemy to spawn. The higher the number, the more likely to spawn. Can go to 1000000000, any higher will break. Use Spawn Rarity must be set to True");
+            CanSpawnOutsideConfig = Config.Bind<bool>("Spawns", "Allow Masked To Spawn Outside", false, "Whether the Masked Enemy can spawn outside the building");
+            MaxSpawnCountConfig = Config.Bind<int>("Spawns", "Max Number of Masked", 2, "Max Number of possible masked to spawn in one level");
+
+
+
             ZombieApocalypeModeConfig = Config.Bind<bool>("Zombie Apocalypse Mode", "Zombie Apocalype Mode", false, "Only spawns Masked! Make sure to crank up the Max Spawn Count in this config! Would also recommend bringing a gun (mod), a shovel works fine too though.... This mode does not play nice with other mods that affect spawn rates. Disable those before playing for best results");
             ZombieApocalypeRandomChanceConfig = Config.Bind<int>("Zombie Apocalypse Mode", "Random Zombie Apocalype Mode", -1, "[Must Be Whole Number] The percent chance from 1 to 100 that a day could contain a zombie apocalypse. Put at -1 to never have the chance arise and don't have Only Spawn Masked turned on");
-
             InsideEnemySpawnCurveConfig = Config.Bind<float>("Zombie Apocalypse Mode", "StartOfDay Inside Masked Spawn Curve", 0.1f, "Spawn curve for masked inside, start of the day. Crank this way up for immediate action. More info in the readme");
             MiddayInsideEnemySpawnCurveConfig = Config.Bind<float>("Zombie Apocalypse Mode", "Midday Inside Masked Spawn Curve", 500f, "Spawn curve for masked inside, midday.");
             StartOutsideEnemySpawnCurveConfig = Config.Bind<float>("Zombie Apocalypse Mode", "StartOfDay Masked Outside Spawn Curve", -30f, "Spawn curve for outside masked, start of the day.");
@@ -76,6 +84,7 @@ namespace MaskedEnemyRework
             EndOutsideEnemySpawnCurveConfig = Config.Bind<float>("Zombie Apocalypse Mode", "EOD Outside Masked Spawn Curve", 10f, "Spawn curve for outside masked, end of day");
 
             RemoveMasks = RemoveMasksConfig.Value;
+            UseVanillaSpawns = UseVanillaSpawnsConfig.Value;
             RemoveZombieArms = RemoveZombieArmsConfig.Value;
             UseSpawnRarity = UseSpawnRarityConfig.Value;
             CanSpawnOutside = CanSpawnOutsideConfig.Value;
