@@ -1,4 +1,8 @@
 # Changelog
+## v2.4.1
+- Added GitHub link
+- Updated ReadMe
+
 ## v2.4.0 
 - Added MoreCompanyCosmetic support
 
