@@ -1,4 +1,4 @@
-# Masked Enemy Overhaul (v2.3.0)
+# Masked Enemy Overhaul (v2.4.1)
 + Removes the mask the mimic wears, so no one can tell its a fake until it is too late. 
 + Boosts the spawn rate to be the same as a bracken, so it can now spawn on every moon
 + Changes the suit the mimic spawns with to a suit worn by a random player in the game. This works with any modded suit as well
@@ -17,7 +17,7 @@
 + For the spawn curves, the numbers can go very high. As an example, putting the starting numbers at 500 will spawn several enemies on the ground before you even land. Turn up the end of day numbers and leave the start of day numbers vanilla for a rapid increase of Masked as the day progresses.
 
 ## Known Issues
-+ Has several issues with MoreCompany cosmetics. Can not be fixed by me.
++ None. Some probably exist. You can find me in the LC Modding Discord (https://discord.gg/yPqecGaY)
 
 ## Multiplayer
 This mod works in both solo and multiplayer lobbies. Everyone download it.
