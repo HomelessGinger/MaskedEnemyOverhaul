@@ -1,25 +1,23 @@
-# Masked Enemy Overhaul (v2.1.0)
+# Masked Enemy Overhaul (v2.3.0)
 + Removes the mask the mimic wears, so no one can tell its a fake until it is too late. 
 + Boosts the spawn rate to be the same as a bracken, so it can now spawn on every moon
 + Changes the suit the mimic spawns with to a suit worn by a random player in the game. This works with any modded suit as well
++ Supports MoreCompany Cosmetics
 + Most Setting are configurable in the config file
 + A Zombie Apocalypse???
 
-## Notes
-The Config file had a few changes, i would recommend uninstalling and reinstalling the mod if the config seems to be broken
-
 ## Recommended Mods
-+ I **HIGHLY** recommend pairing this mod with the Skinwalker mod, which records and plays the voices of your friends back to you. 
-If you use the skinwalker mod, i also recommend changing the config file for that mod to only have the masked enemy talk, as it fits this mod perfectly
++ Skinwalkers by RedbugRedfern. Records and plays the voices of your friends back to you. I also recommend changing the config file for Skinwalkers to only have the masked enemy talk
++ LC Masked Fix by kuba6000. This fixes an issue with masked that occurs when killing the masked while it is attacking another player. 
 
 ## Zombie Apocalypse
 + This is just a fun little part of the mod. It only spawns the masked enemies, with the ability to bump up the enemy spawn rate. Do not use this mode with other mods that affect spawn rates. There is a very good chance they conflict. Turn it on in the config.
++ Spawns may feel off, as of now i use the default vanilla spawning methods (letting the vanilla game decide when to spawn a new batch of enemies). this could feel very slow at times since it is random and tied to in game time.
 + Also has random zombie event, it is very unvanilla so it is off by default. 
 + For the spawn curves, the numbers can go very high. As an example, putting the starting numbers at 500 will spawn several enemies on the ground before you even land. Turn up the end of day numbers and leave the start of day numbers vanilla for a rapid increase of Masked as the day progresses.
 
 ## Known Issues
-+ None, but some probably exist. Unless it is game breaking, will probably not be fixed
-
++ Has several issues with MoreCompany cosmetics. Can not be fixed by me.
 
 ## Multiplayer
 This mod works in both solo and multiplayer lobbies. Everyone download it.

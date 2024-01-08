@@ -4,25 +4,30 @@ using BepInEx.Logging;
 using HarmonyLib;
 using MaskedEnemyRework.Patches;
 using System;
+using System.Collections.Generic;
 using System.Security.Policy;
+using Unity.Netcode;
 
 namespace MaskedEnemyRework
 {
     [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
+    [BepInDependency("me.swipez.melonloader.morecompany", BepInDependency.DependencyFlags.SoftDependency)]
     public class Plugin : BaseUnityPlugin
     {
         private readonly Harmony harmony = new(PluginInfo.PLUGIN_GUID);
         private static Plugin Instance;
         internal ManualLogSource logger;
 
+        public static List<int> PlayerMimicList;
+        public static int PlayerMimicIndex;
+
         private ConfigEntry<bool> RemoveMasksConfig;
+        private ConfigEntry<bool> RevealMasksConfig;
         private ConfigEntry<bool> RemoveZombieArmsConfig;
         private ConfigEntry<bool> UseSpawnRarityConfig;
         private ConfigEntry<int> SpawnRarityConfig;
         private ConfigEntry<bool> CanSpawnOutsideConfig;
         private ConfigEntry<int> MaxSpawnCountConfig;
-
-
 
 
         private ConfigEntry<bool> ZombieApocalypeModeConfig;
@@ -35,6 +40,7 @@ namespace MaskedEnemyRework
         private ConfigEntry<float> EndOutsideEnemySpawnCurveConfig;
 
         public static bool RemoveMasks;
+        public static bool RevealMasks;
         public static bool RemoveZombieArms;
         public static bool UseSpawnRarity;
         public static int SpawnRarity;
@@ -51,7 +57,7 @@ namespace MaskedEnemyRework
         public static float MidOutsideEnemySpawnCurve;
         public static float EndOutsideEnemySpawnCurve;
 
-        public static int PlayerCount;
+        public static int InitialPlayerCount;
         public static SpawnableEnemyWithRarity maskedPrefab;
         public static SpawnableEnemyWithRarity flowerPrefab;
 
@@ -62,7 +68,14 @@ namespace MaskedEnemyRework
                 Instance = this;
             }
 
+
+            PlayerMimicList = new List<int> { };
+            PlayerMimicIndex = 0;
+            InitialPlayerCount = 0;
+
+
             RemoveMasksConfig = Config.Bind<bool>("General", "Remove Mask From Masked Enemy", true, "Whether or not the Masked Enemy has a mask on.");
+            RevealMasksConfig = Config.Bind<bool>("General", "Reveal Mask When Attacking", false, "The enemy would reveal their mask permanently after trying to attack someone. Mask would be off until the attempt to attack is made");
             RemoveZombieArmsConfig = Config.Bind<bool>("General", "Remove Zombie Arms", true, "Remove the animation where the Masked raise arms like a zombie.");
             UseVanillaSpawnsConfig = Config.Bind<bool>("General", "Use Vanilla Spawns", false, "Ignores anything else in this mod. Only uses the above settings from this config. Will not spawn on all moons. will ignore EVERYTHING in the config below this point.");
 
@@ -84,6 +97,7 @@ namespace MaskedEnemyRework
             EndOutsideEnemySpawnCurveConfig = Config.Bind<float>("Zombie Apocalypse Mode", "EOD Outside Masked Spawn Curve", 10f, "Spawn curve for outside masked, end of day");
 
             RemoveMasks = RemoveMasksConfig.Value;
+            RevealMasks = RevealMasksConfig.Value;
             UseVanillaSpawns = UseVanillaSpawnsConfig.Value;
             RemoveZombieArms = RemoveZombieArmsConfig.Value;
             UseSpawnRarity = UseSpawnRarityConfig.Value;
@@ -109,8 +123,9 @@ namespace MaskedEnemyRework
             harmony.PatchAll(typeof(GetMaskedPrefabForLaterUse));
             harmony.PatchAll(typeof(MaskedVisualRework));
             harmony.PatchAll(typeof(MaskedSpawnSettings));
-            harmony.PatchAll(typeof(RemoveZombieArms));
 
         }
+
+       
     }
 }

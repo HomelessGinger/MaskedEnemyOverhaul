@@ -19,6 +19,8 @@ namespace MaskedEnemyRework.Patches
         [HarmonyPrefix]
         static void UpdateSpawnRates(ref SelectableLevel ___currentLevel)
         {
+           
+
             if (Plugin.UseVanillaSpawns)
                 return;
 

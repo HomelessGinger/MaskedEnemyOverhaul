@@ -1,0 +1,37 @@
+# Changelog
+## v2.4.0 
+- Added MoreCompanyCosmetic support
+
+## v2.3.0
+- Added config option to hide mask until the Masked is about to attack
+## v2.2.1
+- Fixed typo in readme
+
+## v2.2.0
+- Different Masked now spawn with different skins. They no longer all wear the same skin
+
+## v2.1.0
+- Adjusted default spawn rates as the masked were spawning a tad too often on the small moons
+- Added a true vanilla spawn rate option to the config
+
+## v2.0.1
+- Added more detail to read me
+- Added Random Zombie Apocalypse Event Chance (turned off by default)
+
+## v2.0.0
+- Added Zombie Apocalypse Mode
+- Fixed a rare issue where the Masked did not spawn on all moons
+- Added config option to remove animation where Masked raises arms like a zombie
+
+## v1.1.0
+- Fixed issue where Masked was only unmasked for the host
+- Fixed issue where everyone saw different suits for the same masked
+
+## v1.0.3
+- Added the initial config file to edit the Masked spawn rates
+
+## v1.0.2
+- Readme update
+
+## v1.0.1
+- Initial release

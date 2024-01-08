@@ -1,9 +1,11 @@
-﻿using BepInEx.Logging;
+﻿using BepInEx.Bootstrap;
+using BepInEx.Logging;
 using GameNetcodeStuff;
 using HarmonyLib;
 using HarmonyLib.Tools;
 using MonoMod.RuntimeDetour;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -11,12 +13,17 @@ using System.Text;
 using System.Threading.Tasks;
 using Unity.Netcode;
 using UnityEngine;
+using static System.Net.Mime.MediaTypeNames;
+using Random = UnityEngine.Random;
 
 namespace MaskedEnemyRework.Patches
 {
     [HarmonyPatch(typeof(MaskedPlayerEnemy))]
     internal class MaskedVisualRework
     {
+
+        static int randomPlayerIndex;
+        private static IEnumerator coroutine;
 
         [HarmonyPatch("Start")]
         [HarmonyPostfix]
@@ -28,31 +35,104 @@ namespace MaskedEnemyRework.Patches
             int playerCount = StartOfRound.Instance.ClientPlayerList.Count;
             if (playerCount == 0)
             {
-                playerCount = UnityEngine.Random.Range(0,2);
+                playerCount = 1;
                 logger.LogInfo("Player count was zero");
             }
 
 
+            if(Plugin.PlayerMimicList.Count <= 1 || Plugin.InitialPlayerCount != playerCount) // remakes list if new player joins
+            {
+                Plugin.InitialPlayerCount = playerCount;
+                Random.State stateBeforeITouchedIt = Random.state; // not sure this is necessary, but since this is a global change i do not want to impact map generation. would be very bad :)
+                Random.InitState(1234);
+                for(int i = 0; i < 50; i++)
+                {
+                    Plugin.PlayerMimicList.Add(Random.Range(0, playerCount));
+                }
+                Random.state = stateBeforeITouchedIt;
+            }
+
             // this chooses the player to mimic
-            
-            var randomPlayerIndex = StartOfRound.Instance.randomMapSeed % playerCount;
-
-            logger.LogInfo("player count" + playerCount);
-            logger.LogInfo("player index" + randomPlayerIndex);
+            randomPlayerIndex = Plugin.PlayerMimicList[Plugin.PlayerMimicIndex % 50];
             randomPlayerIndex = Mathf.Clamp(randomPlayerIndex, 0, playerCount);
+            Plugin.PlayerMimicIndex += 1;
 
-            var playerToMimic = playerObjects[randomPlayerIndex];
-            __instance.mimickingPlayer = playerToMimic;
+            if(__instance.mimickingPlayer == null)
+            {
+                __instance.mimickingPlayer = playerObjects[randomPlayerIndex];
+
+            }
             // replace player models with ones found on active Clients in level
-
-            __instance.SetSuit(playerToMimic.currentSuitID);
-
+            __instance.SetSuit(__instance.mimickingPlayer.currentSuitID);
             // remove mask
-            if (Plugin.RemoveMasks)
+            if (Plugin.RemoveMasks || Plugin.RevealMasks)
             {
                 __instance.gameObject.transform.Find("ScavengerModel/metarig/spine/spine.001/spine.002/spine.003/spine.004/HeadMaskComedy").gameObject.SetActive(false);
                 __instance.gameObject.transform.Find("ScavengerModel/metarig/spine/spine.001/spine.002/spine.003/spine.004/HeadMaskTragedy").gameObject.SetActive(false);
             }
+
+
+            if (Chainloader.PluginInfos.ContainsKey("me.swipez.melonloader.morecompany"))
+                MoreCompanyPatch.ApplyCosmetics(__instance);
         }
+
+        [HarmonyPatch("SetHandsOutClientRpc")]
+        [HarmonyPrefix]
+        private static void MaskAndArmsReveal(ref bool setOut, ref MaskedPlayerEnemy __instance)
+        {
+
+            GameObject mask = __instance.gameObject.transform.Find("ScavengerModel/metarig/spine/spine.001/spine.002/spine.003/spine.004/HeadMaskComedy").gameObject;
+            if (Plugin.RevealMasks && !mask.activeSelf && __instance.currentBehaviourStateIndex == 1) 
+            {
+                IEnumerator fadeMaskCoroutine = fadeInAndOut(mask, true, 1f);
+                __instance.StartCoroutine(fadeMaskCoroutine);
+            }
+            
+            if (Plugin.RemoveZombieArms)
+            {
+                setOut = false;
+            }
+        }
+
+        [HarmonyPatch("SetEnemyOutside")]
+        [HarmonyPostfix]
+        [HarmonyPriority(Priority.LowerThanNormal)]
+        private static void HideCosmeticsIfMarked(ref MaskedPlayerEnemy __instance)
+        {
+            if (Chainloader.PluginInfos.ContainsKey("me.swipez.melonloader.morecompany"))
+                MoreCompanyPatch.ApplyCosmetics(__instance);
+        }
+
+
+        static IEnumerator fadeInAndOut(GameObject mask, bool fadeIn, float duration)
+        {
+            float counter = 0f;
+            float startLoc, endLoc;
+            mask.SetActive(true);
+            if (fadeIn)
+            {
+                startLoc = 0.095f;
+                endLoc =.215f;
+            }
+            else
+            {
+                startLoc = .215f;
+                endLoc = 0.095f;
+            }
+
+            while (counter < duration)
+            {
+                counter += Time.deltaTime;
+                float loc = Mathf.Lerp(startLoc, endLoc, counter / duration);
+                mask.transform.localPosition = new UnityEngine.Vector3 (-.009f, .143f, loc);
+                yield return null;
+            }
+
+            if(!fadeIn)
+            {
+                mask.SetActive(false);
+            }
+        }
+
     }
 }
