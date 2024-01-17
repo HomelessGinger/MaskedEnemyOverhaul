@@ -1,14 +1,15 @@
-# Masked Enemy Overhaul (v2.4.1)
+# Masked Enemy Overhaul (v3.1.0)
 + Removes the mask the mimic wears, so no one can tell its a fake until it is too late. 
++ Fake username above the mimic
 + Boosts the spawn rate to be the same as a bracken, so it can now spawn on every moon
 + Changes the suit the mimic spawns with to a suit worn by a random player in the game. This works with any modded suit as well
-+ Supports MoreCompany Cosmetics
++ Supports cosmetics
 + Most Setting are configurable in the config file
 + A Zombie Apocalypse???
 
 ## Recommended Mods
 + Skinwalkers by RedbugRedfern. Records and plays the voices of your friends back to you. I also recommend changing the config file for Skinwalkers to only have the masked enemy talk
-+ LC Masked Fix by kuba6000. This fixes an issue with masked that occurs when killing the masked while it is attacking another player. 
++ LC Masked Fix by kuba6000. This fixes a few issues with the base version of the masked enemy
 
 ## Zombie Apocalypse
 + This is just a fun little part of the mod. It only spawns the masked enemies, with the ability to bump up the enemy spawn rate. Do not use this mode with other mods that affect spawn rates. There is a very good chance they conflict. Turn it on in the config.
@@ -17,10 +18,10 @@
 + For the spawn curves, the numbers can go very high. As an example, putting the starting numbers at 500 will spawn several enemies on the ground before you even land. Turn up the end of day numbers and leave the start of day numbers vanilla for a rapid increase of Masked as the day progresses.
 
 ## Known Issues
-+ None. Some probably exist. You can find me in the LC Modding Discord (https://discord.gg/yPqecGaY)
++ Nametags on Masked do not work, disabled for now. You can find me in the LC Modding Discord (https://discord.gg/yPqecGaY)
 
 ## Multiplayer
 This mod works in both solo and multiplayer lobbies. Everyone download it.
 
 ## Development
-Last tested on Lethal Company v45.
+Last tested on Lethal Company v49.

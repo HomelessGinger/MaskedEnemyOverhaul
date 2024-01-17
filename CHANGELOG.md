@@ -1,4 +1,12 @@
 # Changelog
+## v3.1.0
+- Actually fixed Advanced Company
+
+## v3.0.0
+- Possible fix for advcom cosmetics
+- Show masked usernames added to config (off by default until more testing is done)
+- Reveal Masked Plugin option now hides the mask again when the player escapes the Masked
+
 ## v2.4.1
 - Added GitHub link
 - Updated ReadMe
