@@ -1,5 +1,7 @@
 ﻿using BepInEx.Bootstrap;
+using GameNetcodeStuff;
 using HarmonyLib;
+using MaskedEnemyRework.External_Classes;
 using MoreCompany.Cosmetics;
 using System;
 using System.Collections.Generic;
@@ -14,7 +16,10 @@ namespace MaskedEnemyRework.Patches
     {
         public static void ApplyCosmetics(MaskedPlayerEnemy masked)
         {
-            
+
+            if (!MoreCompany.MainClass.showCosmetics || MoreCompany.MainClass.playerIdsAndCosmetics.Count == 0)
+                return;
+
             Transform cosmeticRoot = masked.transform.Find("ScavengerModel").Find("metarig");
             CosmeticApplication cosmeticApplication = cosmeticRoot.GetComponent<CosmeticApplication>();
             if (cosmeticApplication)
@@ -22,10 +27,6 @@ namespace MaskedEnemyRework.Patches
                 cosmeticApplication.ClearCosmetics();
                 GameObject.Destroy(cosmeticApplication);
             }
-
-
-            if (!MoreCompany.MainClass.showCosmetics)
-                return;
 
 
             List<string> playerCosmetics = MoreCompany.MainClass.playerIdsAndCosmetics[(int)masked.mimickingPlayer.playerClientId];

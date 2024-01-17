@@ -23,6 +23,7 @@ namespace MaskedEnemyRework
 
         private ConfigEntry<bool> RemoveMasksConfig;
         private ConfigEntry<bool> RevealMasksConfig;
+        private ConfigEntry<bool> ShowMaskedNamesConfig;
         private ConfigEntry<bool> RemoveZombieArmsConfig;
         private ConfigEntry<bool> UseSpawnRarityConfig;
         private ConfigEntry<int> SpawnRarityConfig;
@@ -33,6 +34,7 @@ namespace MaskedEnemyRework
         private ConfigEntry<bool> ZombieApocalypeModeConfig;
         private ConfigEntry<bool> UseVanillaSpawnsConfig;
         private ConfigEntry<int> ZombieApocalypeRandomChanceConfig;
+        private ConfigEntry<int> MaxZombiesZombieConfig;
         private ConfigEntry<float> InsideEnemySpawnCurveConfig;
         private ConfigEntry<float> MiddayInsideEnemySpawnCurveConfig;
         private ConfigEntry<float> StartOutsideEnemySpawnCurveConfig;
@@ -41,6 +43,7 @@ namespace MaskedEnemyRework
 
         public static bool RemoveMasks;
         public static bool RevealMasks;
+        public static bool ShowMaskedNames;
         public static bool RemoveZombieArms;
         public static bool UseSpawnRarity;
         public static int SpawnRarity;
@@ -48,6 +51,7 @@ namespace MaskedEnemyRework
         public static int MaxSpawnCount;
 
 
+        public static int MaxZombies;
         public static bool ZombieApocalypseMode;
         public static bool UseVanillaSpawns;
         public static int RandomChanceZombieApocalypse;
@@ -74,6 +78,7 @@ namespace MaskedEnemyRework
             InitialPlayerCount = 0;
 
 
+            ShowMaskedNamesConfig = Config.Bind<bool>("General", "Show Masked Usernames", false, "Will show username of player being mimicked.");
             RemoveMasksConfig = Config.Bind<bool>("General", "Remove Mask From Masked Enemy", true, "Whether or not the Masked Enemy has a mask on.");
             RevealMasksConfig = Config.Bind<bool>("General", "Reveal Mask When Attacking", false, "The enemy would reveal their mask permanently after trying to attack someone. Mask would be off until the attempt to attack is made");
             RemoveZombieArmsConfig = Config.Bind<bool>("General", "Remove Zombie Arms", true, "Remove the animation where the Masked raise arms like a zombie.");
@@ -88,8 +93,9 @@ namespace MaskedEnemyRework
 
 
 
-            ZombieApocalypeModeConfig = Config.Bind<bool>("Zombie Apocalypse Mode", "Zombie Apocalype Mode", false, "Only spawns Masked! Make sure to crank up the Max Spawn Count in this config! Would also recommend bringing a gun (mod), a shovel works fine too though.... This mode does not play nice with other mods that affect spawn rates. Disable those before playing for best results");
-            ZombieApocalypeRandomChanceConfig = Config.Bind<int>("Zombie Apocalypse Mode", "Random Zombie Apocalype Mode", -1, "[Must Be Whole Number] The percent chance from 1 to 100 that a day could contain a zombie apocalypse. Put at -1 to never have the chance arise and don't have Only Spawn Masked turned on");
+            ZombieApocalypeModeConfig = Config.Bind<bool>("Zombie Apocalypse Mode", "Zombie Apocalypse Mode", false, "Only spawns Masked! Make sure to crank up the Max Spawn Count in this config! Would also recommend bringing a gun (mod), a shovel works fine too though.... This mode does not play nice with other mods that affect spawn rates. Disable those before playing for best results");
+            MaxZombiesZombieConfig = Config.Bind<int>("Zombie Apocalypse Mode", "Max Number of Masked in Zombie Apocalypse", 2, "Max Number of possible masked to spawn in Zombie Apocalypse");
+            ZombieApocalypeRandomChanceConfig = Config.Bind<int>("Zombie Apocalypse Mode", "Random Zombie Apocalypse Mode", -1, "[Must Be Whole Number] The percent chance from 1 to 100 that a day could contain a zombie apocalypse. Put at -1 to never have the chance arise and don't have Only Spawn Masked turned on");
             InsideEnemySpawnCurveConfig = Config.Bind<float>("Zombie Apocalypse Mode", "StartOfDay Inside Masked Spawn Curve", 0.1f, "Spawn curve for masked inside, start of the day. Crank this way up for immediate action. More info in the readme");
             MiddayInsideEnemySpawnCurveConfig = Config.Bind<float>("Zombie Apocalypse Mode", "Midday Inside Masked Spawn Curve", 500f, "Spawn curve for masked inside, midday.");
             StartOutsideEnemySpawnCurveConfig = Config.Bind<float>("Zombie Apocalypse Mode", "StartOfDay Masked Outside Spawn Curve", -30f, "Spawn curve for outside masked, start of the day.");
@@ -97,6 +103,7 @@ namespace MaskedEnemyRework
             EndOutsideEnemySpawnCurveConfig = Config.Bind<float>("Zombie Apocalypse Mode", "EOD Outside Masked Spawn Curve", 10f, "Spawn curve for outside masked, end of day");
 
             RemoveMasks = RemoveMasksConfig.Value;
+            ShowMaskedNames = ShowMaskedNamesConfig.Value;
             RevealMasks = RevealMasksConfig.Value;
             UseVanillaSpawns = UseVanillaSpawnsConfig.Value;
             RemoveZombieArms = RemoveZombieArmsConfig.Value;
@@ -108,10 +115,11 @@ namespace MaskedEnemyRework
 
 
             ZombieApocalypseMode = ZombieApocalypeModeConfig.Value;
+            MaxZombies = MaxZombiesZombieConfig.Value;
             InsideEnemySpawnCurve = InsideEnemySpawnCurveConfig.Value;
             MiddayInsideEnemySpawnCurve = MiddayInsideEnemySpawnCurveConfig.Value;
             StartOutsideEnemySpawnCurve = StartOutsideEnemySpawnCurveConfig.Value;
-            MidOutsideEnemySpawnCurve = MaxSpawnCountConfig.Value;
+            MidOutsideEnemySpawnCurve = MidOutsideEnemySpawnCurveConfig.Value;
             EndOutsideEnemySpawnCurve = EndOutsideEnemySpawnCurveConfig.Value;
             RandomChanceZombieApocalypse = ZombieApocalypeRandomChanceConfig.Value;
 

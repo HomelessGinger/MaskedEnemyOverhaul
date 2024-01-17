@@ -3,6 +3,7 @@ using BepInEx.Logging;
 using GameNetcodeStuff;
 using HarmonyLib;
 using HarmonyLib.Tools;
+using MaskedEnemyRework.External_Classes;
 using MonoMod.RuntimeDetour;
 using System;
 using System.Collections;
@@ -13,6 +14,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.UI;
 using static System.Net.Mime.MediaTypeNames;
 using Random = UnityEngine.Random;
 
@@ -26,6 +28,7 @@ namespace MaskedEnemyRework.Patches
         private static IEnumerator coroutine;
 
         [HarmonyPatch("Start")]
+        [HarmonyBefore(new string[] { "AdvancedCompany" })]
         [HarmonyPostfix]
         static void ReformVisuals(ref MaskedPlayerEnemy __instance)
         {
@@ -36,9 +39,8 @@ namespace MaskedEnemyRework.Patches
             if (playerCount == 0)
             {
                 playerCount = 1;
-                logger.LogInfo("Player count was zero");
+                logger.LogError("Player count was zero");
             }
-
 
             if(Plugin.PlayerMimicList.Count <= 1 || Plugin.InitialPlayerCount != playerCount) // remakes list if new player joins
             {
@@ -60,8 +62,7 @@ namespace MaskedEnemyRework.Patches
             if(__instance.mimickingPlayer == null)
             {
                 __instance.mimickingPlayer = playerObjects[randomPlayerIndex];
-
-            }
+            } 
             // replace player models with ones found on active Clients in level
             __instance.SetSuit(__instance.mimickingPlayer.currentSuitID);
             // remove mask
@@ -74,6 +75,8 @@ namespace MaskedEnemyRework.Patches
 
             if (Chainloader.PluginInfos.ContainsKey("me.swipez.melonloader.morecompany"))
                 MoreCompanyPatch.ApplyCosmetics(__instance);
+            if (Plugin.ShowMaskedNames)
+                MaskedNamePatch.SetNameBillboard(__instance);
         }
 
         [HarmonyPatch("SetHandsOutClientRpc")]
@@ -84,7 +87,8 @@ namespace MaskedEnemyRework.Patches
             GameObject mask = __instance.gameObject.transform.Find("ScavengerModel/metarig/spine/spine.001/spine.002/spine.003/spine.004/HeadMaskComedy").gameObject;
             if (Plugin.RevealMasks && !mask.activeSelf && __instance.currentBehaviourStateIndex == 1) 
             {
-                IEnumerator fadeMaskCoroutine = fadeInAndOut(mask, true, 1f);
+                ManualLogSource logger = BepInEx.Logging.Logger.CreateLogSource(PluginInfo.PLUGIN_GUID);
+                IEnumerator fadeMaskCoroutine = FadeInAndOut(mask, true, 1f);
                 __instance.StartCoroutine(fadeMaskCoroutine);
             }
             
@@ -92,6 +96,8 @@ namespace MaskedEnemyRework.Patches
             {
                 setOut = false;
             }
+            if (Plugin.ShowMaskedNames)
+                MaskedNamePatch.SetNameBillboard(__instance);
         }
 
         [HarmonyPatch("SetEnemyOutside")]
@@ -103,8 +109,33 @@ namespace MaskedEnemyRework.Patches
                 MoreCompanyPatch.ApplyCosmetics(__instance);
         }
 
+        [HarmonyPatch("DoAIInterval")]
+        [HarmonyPostfix]
+        private static void HideRevealedMask(ref MaskedPlayerEnemy __instance)
+        {
+            if(Plugin.RevealMasks && __instance.targetPlayer == null)
+            {
+                GameObject mask = __instance.gameObject.transform.Find("ScavengerModel/metarig/spine/spine.001/spine.002/spine.003/spine.004/HeadMaskComedy").gameObject;
 
-        static IEnumerator fadeInAndOut(GameObject mask, bool fadeIn, float duration)
+                if (mask.activeSelf)
+                {
+                    IEnumerator fadeMaskCoroutine = FadeInAndOut(mask, false, 1f);
+                    __instance.StartCoroutine(fadeMaskCoroutine);
+                }
+
+            }
+        }
+
+        [HarmonyPatch("Update")]
+        [HarmonyPostfix]
+        private static void UpdateMaskName(ref MaskedPlayerEnemy __instance)
+        {
+            if (Plugin.ShowMaskedNames)
+                MaskedNamePatch.UpdateNameBillboard(__instance);
+        }
+
+
+        static IEnumerator FadeInAndOut(GameObject mask, bool fadeIn, float duration)
         {
             float counter = 0f;
             float startLoc, endLoc;
