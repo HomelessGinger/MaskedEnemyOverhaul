@@ -19,102 +19,90 @@ namespace MaskedEnemyRework.Patches
         [HarmonyPrefix]
         static void UpdateSpawnRates(ref SelectableLevel ___currentLevel)
         {
-           
             if (Plugin.UseVanillaSpawns)
                 return;
 
             ManualLogSource logger = BepInEx.Logging.Logger.CreateLogSource(PluginInfo.PLUGIN_GUID);
+            logger.LogInfo("Starting Round Manager");
+
+            Predicate<SpawnableEnemyWithRarity> isMasked    = enemy => enemy.enemyType.enemyName == "Masked";
+            Predicate<SpawnableEnemyWithRarity> isFlowerman = enemy => enemy.enemyType.enemyName == "Flowerman";
 
             try
             {
-                logger.LogInfo("Starting Round Manager");
                 SpawnableEnemyWithRarity maskedEnemy = Plugin.maskedPrefab;
-                SpawnableEnemyWithRarity flowerman = Plugin.flowerPrefab;
+                SpawnableEnemyWithRarity flowerman   = ___currentLevel.Enemies.Find(isFlowerman) ?? Plugin.flowerPrefab;
 
-
-
-                List<SpawnableEnemyWithRarity> currentLevelEnemiesCopy = ___currentLevel.Enemies;
-
-
-                for (int i = 0; i < ___currentLevel.Enemies.Count; i++)
+                int powerDelta = 0;
+                foreach (SpawnableEnemyWithRarity enemy in ___currentLevel.Enemies.FindAll(isMasked))
                 {
-                    var enemy = ___currentLevel.Enemies[i];
-                    if (enemy.enemyType.enemyName == "Masked")
-                        currentLevelEnemiesCopy.Remove(enemy);
-                    if (enemy.enemyType.enemyName == "Flowerman")
-                        flowerman = enemy;
+                    powerDelta -= enemy.enemyType.MaxCount * enemy.enemyType.PowerLevel;
                 }
-                ___currentLevel.Enemies = currentLevelEnemiesCopy;
+                ___currentLevel.Enemies.RemoveAll(isMasked);
+                ___currentLevel.Enemies.Add(maskedEnemy);
 
+                if (Plugin.CanSpawnOutside)
+                {
+                    ___currentLevel.OutsideEnemies.RemoveAll(isMasked);
+                    ___currentLevel.OutsideEnemies.Add(maskedEnemy);
+                    ___currentLevel.DaytimeEnemies.RemoveAll(isMasked);
+                    ___currentLevel.DaytimeEnemies.Add(maskedEnemy);
+                }
 
                 // might spawn too frequently, we will see.
-                maskedEnemy.enemyType.PowerLevel = 1;
+                maskedEnemy.enemyType.PowerLevel       = 1;
                 maskedEnemy.enemyType.probabilityCurve = flowerman.enemyType.probabilityCurve;
-                if (Plugin.UseSpawnRarity)
-                {
-                    maskedEnemy.rarity = Plugin.SpawnRarity;
-                }
-                else
-                {
-                    maskedEnemy.rarity = flowerman.rarity;
-                }
-                maskedEnemy.enemyType.MaxCount = Plugin.MaxSpawnCount;
-                var firstTwoDigitsOfMapSeed = 0;
-                if (StartOfRound.Instance.randomMapSeed.ToString().Length < 3)
-                {
-                    firstTwoDigitsOfMapSeed = 0;
-                }
-                else
-                {
-                    firstTwoDigitsOfMapSeed = int.Parse(StartOfRound.Instance.randomMapSeed.ToString().Substring(1, 2));
-                }
+                maskedEnemy.enemyType.isOutsideEnemy   = Plugin.CanSpawnOutside;
 
-                firstTwoDigitsOfMapSeed = Mathf.Clamp(firstTwoDigitsOfMapSeed, 0, 100);
-                if (Plugin.ZombieApocalypseMode || (firstTwoDigitsOfMapSeed <= Plugin.RandomChanceZombieApocalypse && Plugin.RandomChanceZombieApocalypse >= 0))
+                bool zombieApocalypse = Plugin.ZombieApocalypseMode;
+                zombieApocalypse |= (StartOfRound.Instance.randomMapSeed % 100) < Plugin.RandomChanceZombieApocalypse;
+
+                if (zombieApocalypse)
                 {
                     logger.LogInfo("ZOMBIE APOCALYPSE");
+
                     maskedEnemy.enemyType.MaxCount = Plugin.MaxZombies;
+                    maskedEnemy.rarity = 1000000;
 
                     Plugin.RandomChanceZombieApocalypse = -1;
 
                     ___currentLevel.enemySpawnChanceThroughoutDay = new AnimationCurve((Keyframe[])(object)new Keyframe[2]
                     {
-                        new Keyframe(0f, Plugin.InsideEnemySpawnCurve),
+                        new Keyframe(0f,   Plugin.InsideEnemySpawnCurve),
                         new Keyframe(0.5f, Plugin.MiddayInsideEnemySpawnCurve)
                     });
                     ___currentLevel.daytimeEnemySpawnChanceThroughDay = new AnimationCurve((Keyframe[])(object)new Keyframe[2]
                     {
-                        new Keyframe(0f, 7f),
+                        new Keyframe(0f,   7f),
                         new Keyframe(0.5f, 7f)
                     });
                     ___currentLevel.outsideEnemySpawnChanceThroughDay = new AnimationCurve((Keyframe[])(object)new Keyframe[3]
                     {
-                        new Keyframe(0f, Plugin.StartOutsideEnemySpawnCurve),
-                        new Keyframe(20f,Plugin.MidOutsideEnemySpawnCurve),
+                        new Keyframe(0f,  Plugin.StartOutsideEnemySpawnCurve),
+                        new Keyframe(20f, Plugin.MidOutsideEnemySpawnCurve),
                         new Keyframe(21f, Plugin.EndOutsideEnemySpawnCurve)
                     });
-
-                    maskedEnemy.rarity = 1000000;
-
                 }
                 else
                 {
                     logger.LogInfo("no zombies :(");
+
+                    maskedEnemy.enemyType.MaxCount = Plugin.MaxSpawnCount;
+                    maskedEnemy.rarity = Plugin.UseSpawnRarity ? Plugin.SpawnRarity : flowerman.rarity;
                 }
 
+                powerDelta += maskedEnemy.enemyType.MaxCount * maskedEnemy.enemyType.PowerLevel;
 
-                maskedEnemy.enemyType.isOutsideEnemy = Plugin.CanSpawnOutside;
+                logger.LogInfo(String.Format("Adjusting power levels: [maxEnemyPowerCount: {0}+{1}, maxDaytimeEnemyPowerCount: {2}+{3}, maxOutsideEnemyPowerCount: {4}+{5}]",
+                                             ___currentLevel.maxEnemyPowerCount,        powerDelta,
+                                             ___currentLevel.maxDaytimeEnemyPowerCount, powerDelta,
+                                             ___currentLevel.maxOutsideEnemyPowerCount, powerDelta));
 
-                if (Plugin.CanSpawnOutside)
-                {
-                    ___currentLevel.OutsideEnemies.Add(maskedEnemy);
-                    ___currentLevel.DaytimeEnemies.Add(maskedEnemy);
-                }
-                ___currentLevel.maxEnemyPowerCount += maskedEnemy.enemyType.MaxCount;
-                ___currentLevel.maxDaytimeEnemyPowerCount += maskedEnemy.enemyType.MaxCount;
-                ___currentLevel.maxOutsideEnemyPowerCount += maskedEnemy.enemyType.MaxCount;
-                ___currentLevel.Enemies.Add(maskedEnemy);
-            } catch (Exception ex)
+                ___currentLevel.maxEnemyPowerCount        += powerDelta;
+                ___currentLevel.maxDaytimeEnemyPowerCount += powerDelta;
+                ___currentLevel.maxOutsideEnemyPowerCount += powerDelta;
+            }
+            catch (Exception ex)
             {
                logger.LogInfo(ex);
             }
