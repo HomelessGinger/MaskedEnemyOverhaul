@@ -1,7 +1,7 @@
 ﻿using BepInEx.Bootstrap;
 using GameNetcodeStuff;
 using HarmonyLib;
-using MaskedEnemyRework.External_Classes;
+//using MaskedEnemyRework.External_Classes;
 using MoreCompany.Cosmetics;
 using System;
 using System.Collections.Generic;

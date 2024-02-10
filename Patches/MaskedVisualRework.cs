@@ -3,7 +3,7 @@ using BepInEx.Logging;
 using GameNetcodeStuff;
 using HarmonyLib;
 using HarmonyLib.Tools;
-using MaskedEnemyRework.External_Classes;
+//using MaskedEnemyRework.External_Classes;
 using MonoMod.RuntimeDetour;
 using System;
 using System.Collections;
@@ -75,8 +75,8 @@ namespace MaskedEnemyRework.Patches
 
             if (Chainloader.PluginInfos.ContainsKey("me.swipez.melonloader.morecompany"))
                 MoreCompanyPatch.ApplyCosmetics(__instance);
-            if (Plugin.ShowMaskedNames)
-                MaskedNamePatch.SetNameBillboard(__instance);
+            //if (Plugin.ShowMaskedNames)
+            //    MaskedNamePatch.SetNameBillboard(__instance);
         }
 
         [HarmonyPatch("SetHandsOutClientRpc")]
@@ -96,8 +96,8 @@ namespace MaskedEnemyRework.Patches
             {
                 setOut = false;
             }
-            if (Plugin.ShowMaskedNames)
-                MaskedNamePatch.SetNameBillboard(__instance);
+            //if (Plugin.ShowMaskedNames)
+            //    MaskedNamePatch.SetNameBillboard(__instance);
         }
 
         [HarmonyPatch("SetEnemyOutside")]
@@ -130,8 +130,8 @@ namespace MaskedEnemyRework.Patches
         [HarmonyPostfix]
         private static void UpdateMaskName(ref MaskedPlayerEnemy __instance)
         {
-            if (Plugin.ShowMaskedNames)
-                MaskedNamePatch.UpdateNameBillboard(__instance);
+            //if (Plugin.ShowMaskedNames)
+            //    MaskedNamePatch.UpdateNameBillboard(__instance);
         }
 
 
