@@ -73,8 +73,10 @@ namespace MaskedEnemyRework.Patches
             }
 
 
-            if (Chainloader.PluginInfos.ContainsKey("me.swipez.melonloader.morecompany"))
+            if (Chainloader.PluginInfos.ContainsKey("me.swipez.melonloader.morecompany") && !Chainloader.PluginInfos.ContainsKey("com.potatoepet.AdvancedCompany"))
+            {
                 MoreCompanyPatch.ApplyCosmetics(__instance);
+            }
             //if (Plugin.ShowMaskedNames)
             //    MaskedNamePatch.SetNameBillboard(__instance);
         }
@@ -105,8 +107,10 @@ namespace MaskedEnemyRework.Patches
         [HarmonyPriority(Priority.LowerThanNormal)]
         private static void HideCosmeticsIfMarked(ref MaskedPlayerEnemy __instance)
         {
-            if (Chainloader.PluginInfos.ContainsKey("me.swipez.melonloader.morecompany"))
+            if (Chainloader.PluginInfos.ContainsKey("me.swipez.melonloader.morecompany") && !Chainloader.PluginInfos.ContainsKey("com.potatoepet.AdvancedCompany"))
+            {
                 MoreCompanyPatch.ApplyCosmetics(__instance);
+            }
         }
 
         [HarmonyPatch("DoAIInterval")]
