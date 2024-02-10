@@ -5,7 +5,7 @@ using HarmonyLib;
 using MaskedEnemyRework.Patches;
 using System;
 using System.Collections.Generic;
-using System.Security.Policy;
+//using System.Security.Policy;
 using Unity.Netcode;
 
 namespace MaskedEnemyRework
@@ -33,6 +33,7 @@ namespace MaskedEnemyRework
 
         private ConfigEntry<bool> ZombieApocalypeModeConfig;
         private ConfigEntry<bool> UseVanillaSpawnsConfig;
+        private ConfigEntry<bool> DontTouchMimickingPlayerConfig;
         private ConfigEntry<int> ZombieApocalypeRandomChanceConfig;
         private ConfigEntry<int> MaxZombiesZombieConfig;
         private ConfigEntry<float> InsideEnemySpawnCurveConfig;
@@ -54,6 +55,7 @@ namespace MaskedEnemyRework
         public static int MaxZombies;
         public static bool ZombieApocalypseMode;
         public static bool UseVanillaSpawns;
+        public static bool DontTouchMimickingPlayer;
         public static int RandomChanceZombieApocalypse;
         public static float InsideEnemySpawnCurve;
         public static float MiddayInsideEnemySpawnCurve;
@@ -83,6 +85,7 @@ namespace MaskedEnemyRework
             RevealMasksConfig = Config.Bind<bool>("General", "Reveal Mask When Attacking", false, "The enemy would reveal their mask permanently after trying to attack someone. Mask would be off until the attempt to attack is made");
             RemoveZombieArmsConfig = Config.Bind<bool>("General", "Remove Zombie Arms", true, "Remove the animation where the Masked raise arms like a zombie.");
             UseVanillaSpawnsConfig = Config.Bind<bool>("General", "Use Vanilla Spawns", false, "Ignores anything else in this mod. Only uses the above settings from this config. Will not spawn on all moons. will ignore EVERYTHING in the config below this point.");
+            DontTouchMimickingPlayerConfig = Config.Bind<bool>("General", "Dont Touch MaskedPlayerEnemy.mimickingPlayer", false, "Experimental. Give control to other mods (like qwbarch-Mirage) to set which players are impersonated.");
 
 
 
@@ -106,6 +109,7 @@ namespace MaskedEnemyRework
             ShowMaskedNames = ShowMaskedNamesConfig.Value;
             RevealMasks = RevealMasksConfig.Value;
             UseVanillaSpawns = UseVanillaSpawnsConfig.Value;
+            DontTouchMimickingPlayer = DontTouchMimickingPlayerConfig.Value;
             RemoveZombieArms = RemoveZombieArmsConfig.Value;
             UseSpawnRarity = UseSpawnRarityConfig.Value;
             CanSpawnOutside = CanSpawnOutsideConfig.Value;

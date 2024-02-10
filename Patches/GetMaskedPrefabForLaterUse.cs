@@ -52,10 +52,10 @@ namespace MaskedEnemyRework.Patches
                 {
                     masked = hitEnemy.mainScript.gameObject.GetComponent<MaskedPlayerEnemy>();
                 }
-                if (masked != null)
-                {
-                    MaskedNamePatch.ToggleName(masked, true);
-                }
+                //if (masked != null)
+                //{
+                //    MaskedNamePatch.ToggleName(masked, true);
+                //}
             }
         }
     }
