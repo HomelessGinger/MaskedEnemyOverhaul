@@ -23,8 +23,6 @@ namespace MaskedEnemyRework.Patches
     [HarmonyPatch(typeof(MaskedPlayerEnemy))]
     internal class MaskedVisualRework
     {
-
-        static int randomPlayerIndex;
         private static IEnumerator coroutine;
 
         [HarmonyPatch("Start")]
@@ -34,44 +32,47 @@ namespace MaskedEnemyRework.Patches
         {
             ManualLogSource logger = BepInEx.Logging.Logger.CreateLogSource(PluginInfo.PLUGIN_GUID);
 
-            PlayerControllerB[] playerObjects = StartOfRound.Instance.allPlayerScripts; // this spawns max amount of players, not total players (not dynamic)
-            int playerCount = StartOfRound.Instance.ClientPlayerList.Count;
-            if (playerCount == 0)
+            if (!Plugin.DontTouchMimickingPlayer)
             {
-                playerCount = 1;
-                logger.LogError("Player count was zero");
-            }
-
-            if(Plugin.PlayerMimicList.Count <= 1 || Plugin.InitialPlayerCount != playerCount) // remakes list if new player joins
-            {
-                Plugin.InitialPlayerCount = playerCount;
-                Random.State stateBeforeITouchedIt = Random.state; // not sure this is necessary, but since this is a global change i do not want to impact map generation. would be very bad :)
-                Random.InitState(1234);
-                for(int i = 0; i < 50; i++)
+                PlayerControllerB[] playerObjects = StartOfRound.Instance.allPlayerScripts; // this spawns max amount of players, not total players (not dynamic)
+                int playerCount = StartOfRound.Instance.ClientPlayerList.Count;
+                if (playerCount == 0)
                 {
-                    Plugin.PlayerMimicList.Add(Random.Range(0, playerCount));
+                    playerCount = 1;
+                    logger.LogError("Player count was zero");
                 }
-                Random.state = stateBeforeITouchedIt;
+
+                if(Plugin.PlayerMimicList.Count <= 1 || Plugin.InitialPlayerCount != playerCount) // remakes list if new player joins
+                {
+                    Plugin.InitialPlayerCount = playerCount;
+                    Random.State stateBeforeITouchedIt = Random.state; // not sure this is necessary, but since this is a global change i do not want to impact map generation. would be very bad :)
+                    Random.InitState(1234);
+                    for(int i = 0; i < 50; i++)
+                    {
+                        Plugin.PlayerMimicList.Add(Random.Range(0, playerCount));
+                    }
+                    Random.state = stateBeforeITouchedIt;
+                }
+
+                // this chooses the player to mimic
+                int randomPlayerIndex = Plugin.PlayerMimicList[Plugin.PlayerMimicIndex % 50] % playerCount;
+                Plugin.PlayerMimicIndex += 1;
+
+                if(__instance.mimickingPlayer == null)
+                {
+                    __instance.mimickingPlayer = playerObjects[randomPlayerIndex];
+                }
+
+                // replace player models with ones found on active Clients in level
+                __instance.SetSuit(__instance.mimickingPlayer.currentSuitID);
             }
 
-            // this chooses the player to mimic
-            randomPlayerIndex = Plugin.PlayerMimicList[Plugin.PlayerMimicIndex % 50];
-            randomPlayerIndex = Mathf.Clamp(randomPlayerIndex, 0, playerCount);
-            Plugin.PlayerMimicIndex += 1;
-
-            if(__instance.mimickingPlayer == null)
-            {
-                __instance.mimickingPlayer = playerObjects[randomPlayerIndex];
-            } 
-            // replace player models with ones found on active Clients in level
-            __instance.SetSuit(__instance.mimickingPlayer.currentSuitID);
             // remove mask
             if (Plugin.RemoveMasks || Plugin.RevealMasks)
             {
                 __instance.gameObject.transform.Find("ScavengerModel/metarig/spine/spine.001/spine.002/spine.003/spine.004/HeadMaskComedy").gameObject.SetActive(false);
                 __instance.gameObject.transform.Find("ScavengerModel/metarig/spine/spine.001/spine.002/spine.003/spine.004/HeadMaskTragedy").gameObject.SetActive(false);
             }
-
 
             if (Chainloader.PluginInfos.ContainsKey("me.swipez.melonloader.morecompany") && !Chainloader.PluginInfos.ContainsKey("com.potatoepet.AdvancedCompany"))
             {
