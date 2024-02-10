@@ -1,4 +1,13 @@
 # Masked Enemy Overhaul (v3.1.0)
+
+Based on [MaskedEnemyOverhaul](https://thunderstore.io/c/lethal-company/p/HomelessGinger/MaskedEnemyOverhaul/) by HomelessGinger
+
+* Fixes an issue that causes moon power levels to steadily increase each time a moon is landed on. Simply playing for a long time (taking off and landing on the same moon) without restarting the game would keep increasing the moon's power level until multiple giants and dozen dogs are able to spawn.
+* Add "Dont Touch MaskedPlayerEnemy.mimickingPlayer" config for better compatibility with qwbarch-Mirage.
+
+
+### Original readme features:
+
 + Removes the mask the mimic wears, so no one can tell its a fake until it is too late. 
 + Fake username above the mimic
 + Boosts the spawn rate to be the same as a bracken, so it can now spawn on every moon
